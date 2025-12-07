@@ -10,7 +10,7 @@ import ConnectionStatusPage from "./components/connection-status-page";
 import { useCustomCursorTracking } from "./hooks/use-custom-cursor-tracking";
 import useAuthStore from "../../stores/useAuthStore";
 import { getRandomColor } from "./utils/colors";
-import {CommandMenu,SelectMenu} from "./components/command-menu";
+import CommandMenu from "./components/command-menu";
 
 interface EditorProps {
   channelId: string;
@@ -43,7 +43,7 @@ const Editor: React.FC<EditorProps> = ({ channelId, userId }) => {
     activeConnectedUsers,
   } = useSocket(channelId, userId, connectionType);
 
-  const { editor, ydoc, handleUpdate, handleInitialState, updateHandler,showSelection } =
+  const { editor, ydoc, handleUpdate, handleInitialState, updateHandler } =
     useCollaborativeEditor(socket);
 
   React.useEffect(() => {
@@ -92,9 +92,7 @@ const Editor: React.FC<EditorProps> = ({ channelId, userId }) => {
 
       {renderRemoteCursors()}
 
-      <CommandMenu   editor={editor} keyDown={keyDown} />
-      <SelectMenu  showSelection={showSelection} editor={editor} keyDown={keyDown} />
-      
+      <CommandMenu editor={editor} keyDown={keyDown} />
 
       {/* {renderRemoteHighlights()} */}
 

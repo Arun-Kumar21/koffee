@@ -1,11 +1,6 @@
 @tailwind base;
 @tailwind components;
-@tailwind utilities;:root {
-  --black: #000000; /* Black color */
-  --white: #ffffff; /* White color */
-  --purple: #6a0dad; 
-  --purple-contrast: #9b4dca;
-}
+@tailwind utilities;
 
 @font-face {
   font-family: "Geist";
@@ -122,97 +117,4 @@ body {
   padding: 2px 4px;
   border-radius: 3px;
   font-size: 0.7em;
-}
-
-/* tiptap editor */
-
- 
-.tiptap {
-  :first-child {
-    margin-top: 0;
-  }
-  border-width: 3px;
-  padding: 1rem;
-  
-  min-height: 100vh;
-
-  h1 {
-    font-size: 2.125rem;
-  }
-
-  h2 {
-    font-size: 1.875rem;
-  }
-
-  h3 {
-    font-size: 1.5rem;
-  }
-
-  h4 {
-    font-size: 1.25rem;
-  }
-
-  /* Bullet List */
-  ul {
-    list-style-type: none; /* Disable default bullet point */
-    padding-left: 1rem;    /* Add padding to the left of the list */
-    margin: 0;             /* Remove any default margin */
-  }
-
-  ul li {
-    display: flex;         /* Use flex to ensure the bullet and text are on the same line */
-    align-items: center;   /* Align the bullet and text vertically */
-  }
-
-  ul li::before {
-    content: "• ";         /* Add bullet point */
-    color: black;          /* Set the color of the bullet */
-    font-weight: bold;     /* Make the bullet bold */
-    margin-right: 0.5rem;  /* Space between bullet and list item text */
-    flex-shrink: 0;        /* Prevent the bullet from shrinking */
-  }
-
-  /* Numbered List */
-  ol {
-    list-style-type: none; /* Disable default numbering */
-    padding-left: 1rem;    /* Add padding to the left of the list */
-    margin: 0;             /* Remove any default margin */
-  }
-
-  ol li {
-    display: flex;         /* Use flex to ensure the number and text are on the same line */
-    align-items: center;   /* Align the number and text vertically */
-  }
-
-  ol li::before {
-    content: counter(list-counter) ". "; /* Display the number followed by a dot */
-    color: black;          /* Set the color of the number */
-    font-weight: bold;     /* Make the number bold */
-    margin-right: 0.5rem;  /* Space between number and list item text */
-    flex-shrink: 0;        /* Prevent the number from shrinking */
-  }
-
-  pre {
-    background: var(--black);
-    border-radius: 0.5rem;
-    color: var(--white);
-    font-family: 'JetBrainsMono', monospace;
-    margin: 1.5rem 0;
-    padding: 0.75rem 1rem;
-
-    code {
-      background: none;
-      color: inherit;
-      font-size: 0.8rem;
-      padding: 0;
-    }
-  }
-  a {
-    color: var(--purple);
-    cursor: pointer;
-
-    &:hover {
-      color: var(--purple-contrast);
-    }
-  }
 }
