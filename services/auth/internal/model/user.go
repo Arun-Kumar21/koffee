@@ -4,19 +4,19 @@ import "time"
 
 type User struct {
 	ID        string  `json:"id"`
-	FirstName string  `json:"first_name"`
-	LastName  *string `json:"last_name,omitempty"`
+	Name      string `json:"name"`
 	Email     string  `json:"email"`
 	Password  string  `json:"-"`
+	Avatar_url string `json:"avatar_url"`
 
 	CreatedAt time.Time `json:"created_at"`
 }
 
 type CreateUserRequest struct {
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
+	Name string `json:"name"`
 	Email     string `json:"email"`
 	Password  string `json:"password"`
+	Avatar_url string `json:"avatar_url"`
 }
 
 type LoginRequest struct {

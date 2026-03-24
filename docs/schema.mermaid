@@ -1,0 +1,71 @@
+erDiagram
+
+  users {
+    uuid id PK
+    varchar email UK
+    varchar password_hash
+    varchar name
+    text avatar_url
+    timestamp created_at
+  }
+
+  workspaces {
+    uuid id PK
+    varchar name
+    uuid owner_id FK
+    timestamp created_at
+  }
+
+  workspace_members {
+    uuid id PK
+    uuid workspace_id FK
+    uuid user_id FK
+    varchar role
+    timestamp joined_at
+  }
+
+  boards {
+    uuid id PK
+    varchar title
+    uuid owner_id FK
+    uuid workspace_id FK
+    boolean is_public
+    timestamp created_at
+    timestamp updated_at
+    timestamp deleted_at
+  }
+
+  board_collaborators {
+    uuid id PK
+    uuid board_id FK
+    uuid user_id FK
+    varchar role
+    timestamp created_at
+  }
+
+  board_elements {
+    uuid id PK
+    uuid board_id FK
+    varchar type
+    varchar subtype
+    jsonb data
+    uuid created_by FK
+    timestamp created_at
+    timestamp updated_at
+    timestamp deleted_at
+  }
+
+  %% presence is stored in Redis (not PostgreSQL)
+  %% Redis key pattern: presence:{board_id}:{user_id}
+  %% Fields: cursor_x, cursor_y, viewport_x, viewport_y, zoom, selected_tool, color, last_seen
+  %% TTL: 30s (auto-expires when user disconnects)
+
+  users ||--o{ workspaces : "owns"
+  users ||--o{ workspace_members : "joins"
+  workspaces ||--o{ workspace_members : "has members"
+  workspaces ||--o{ boards : "contains"
+  users ||--o{ boards : "owns"
+  boards ||--o{ board_collaborators : "has"
+  users ||--o{ board_collaborators : "collaborates on"
+  boards ||--o{ board_elements : "contains"
+  users ||--o{ board_elements : "creates"
