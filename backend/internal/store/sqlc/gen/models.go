@@ -8,8 +8,10 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
+	"github.com/sqlc-dev/pqtype"
 )
 
 type UserRole string
@@ -52,6 +54,18 @@ func (ns NullUserRole) Value() (driver.Value, error) {
 		return nil, nil
 	}
 	return string(ns.UserRole), nil
+}
+
+type RefreshToken struct {
+	ID         uuid.UUID      `json:"id"`
+	UserID     uuid.UUID      `json:"user_id"`
+	TokenHash  string         `json:"token_hash"`
+	DeviceInfo sql.NullString `json:"device_info"`
+	IpAddress  pqtype.Inet    `json:"ip_address"`
+	ExpiresAt  time.Time      `json:"expires_at"`
+	Revoked    sql.NullBool   `json:"revoked"`
+	CreatedAt  sql.NullTime   `json:"created_at"`
+	UpdatedAt  sql.NullTime   `json:"updated_at"`
 }
 
 type User struct {
