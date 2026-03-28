@@ -18,31 +18,31 @@ var (
 
 type TokenClaims struct {
 	UserId string `json:"user_id"`
-	Type string `json:"type"`
+	Type   string `json:"type"`
 	jwt.RegisteredClaims
 }
 
 type TokenManager struct {
-	secret []byte
+	secret          []byte
 	refreshTokenTTL time.Duration
-	accessTokenTTL time.Duration
+	accessTokenTTL  time.Duration
 }
 
-func NewTokenManager (secret string, refreshTokenTTL time.Duration, accessTokenTTL time.Duration) *TokenManager {
+func NewTokenManager(secret string, refreshTokenTTL time.Duration, accessTokenTTL time.Duration) *TokenManager {
 	return &TokenManager{
-		secret: []byte(secret),
+		secret:          []byte(secret),
 		refreshTokenTTL: refreshTokenTTL,
-		accessTokenTTL: accessTokenTTL,
+		accessTokenTTL:  accessTokenTTL,
 	}
 }
 
-func (tm *TokenManager) GenerateAccessToken (userId uuid.UUID) (string, error) {
+func (tm *TokenManager) GenerateAccessToken(userId uuid.UUID) (string, error) {
 	claims := TokenClaims{
 		UserId: userId.String(),
-		Type: "access",
+		Type:   "access",
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(tm.accessTokenTTL)),
-			IssuedAt: jwt.NewNumericDate(time.Now()),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
 

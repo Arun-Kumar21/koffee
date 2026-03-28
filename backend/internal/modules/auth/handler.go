@@ -29,6 +29,17 @@ type registerRequest struct {
 	AvatarUrl string `json:"avatar_url"`
 }
 
+type loginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type authResponse struct {
+	AccessToken  string       `json:"access_token"`
+	RefreshToken string       `json:"refresh_token"`
+	User         UserResponse `json:"user"`
+}
+
 
 
 func NewHandler (service *Service, tokens *TokenManager) *Handler {
