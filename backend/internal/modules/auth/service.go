@@ -148,6 +148,57 @@ func (s *Service) Login(ctx context.Context, input LoginInput) (AuthResult, erro
 	}, nil
 }
 
+func (s *Service) Refresh (ctx context.Context, refreshToken string) (AuthResult, error) {
+	tokenHash := s.tokens.HashRefreshToken(refreshToken)
+
+	rt, err := s.queries.GetRefresToken(ctx, tokenHash)
+	if err != nil {
+		return AuthResult{}, errors.New("invalid token")
+	}
+
+	if time.Now().After(rt.ExpiresAt) {
+		return AuthResult{}, errors.New("token expired")
+	}
+
+	s.queries.RevokeRefreshToken(ctx, tokenHash)
+
+	accessToken, err := s.tokens.GenerateAccessToken(rt.UserID)
+	if err != nil {
+		return AuthResult{}, err
+	}
+
+	newRefreshToken, err := s.tokens.GenerateRefreshToken()
+	if err != nil {
+		return AuthResult{}, err
+	}
+
+	newTokenHash := s.tokens.HashRefreshToken(newRefreshToken)
+	expireAt := time.Now().Add(s.tokens.refreshTokenTTL)
+
+	s.queries.CreateRefreshToken(ctx, store.CreateRefreshTokenParams{
+		UserID: rt.UserID,
+		TokenHash: newTokenHash,
+		ExpiresAt: expireAt,
+		// TODO: Add users ip and device details 
+	})
+
+	user, err := s.queries.GetUserById(ctx, rt.UserID)
+	if err != nil {
+		return AuthResult{}, err
+	} 
+
+	return AuthResult{
+		AccessToken: accessToken,
+		RefreshToken: refreshToken,
+		User: AuthUserResponse {
+			ID: user.ID,
+			Name: user.Name,
+			Email: user.Email,
+			AvatarUrl: user.AvatarUrl,
+		},
+	}, nil
+}
+
 func stringToNullString(value string) sql.NullString {
 	trimmed := strings.TrimSpace(value)
 	if trimmed == "" {

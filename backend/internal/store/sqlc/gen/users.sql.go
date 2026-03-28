@@ -83,6 +83,36 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEm
 	return i, err
 }
 
+const getUserById = `-- name: GetUserById :one
+SELECT id, name, email, password, avatar_url, role, created_at from users
+WHERE id = $1
+`
+
+type GetUserByIdRow struct {
+	ID        uuid.UUID      `json:"id"`
+	Name      string         `json:"name"`
+	Email     string         `json:"email"`
+	Password  string         `json:"password"`
+	AvatarUrl sql.NullString `json:"avatar_url"`
+	Role      UserRole       `json:"role"`
+	CreatedAt sql.NullTime   `json:"created_at"`
+}
+
+func (q *Queries) GetUserById(ctx context.Context, id uuid.UUID) (GetUserByIdRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserById, id)
+	var i GetUserByIdRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.Password,
+		&i.AvatarUrl,
+		&i.Role,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const updateUserPassword = `-- name: UpdateUserPassword :exec
 UPDATE users
 SET password = $1,

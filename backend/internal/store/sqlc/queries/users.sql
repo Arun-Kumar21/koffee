@@ -3,6 +3,10 @@ INSERT INTO users (name, email, password, avatar_url)
 VALUES ($1, $2, $3, $4)
 RETURNING id, name, email, avatar_url, role, created_at;
 
+-- name: GetUserById :one
+SELECT id, name, email, password, avatar_url, role, created_at from users
+WHERE id = $1;
+
 -- name: GetUserByEmail :one
 SELECT id, name, email, password, avatar_url, role, created_at from users 
 WHERE email = $1;
