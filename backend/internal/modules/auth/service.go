@@ -9,7 +9,6 @@ import (
 	"time"
 
 	store "github.com/arun-kumar21/koffee/internal/store/sqlc/gen"
-	"github.com/google/uuid"
 	"github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -32,7 +31,7 @@ type RegisterInput struct {
 }
 
 type RegisterResult struct {
-	UserId string
+	UserID string
 }
 
 type LoginInput struct {
@@ -40,17 +39,11 @@ type LoginInput struct {
 	Password string
 }
 
-type AuthUserResponse struct {
-	ID        uuid.UUID      `json:"id"`
-	Name      string         `json:"name"`
-	Email     string         `json:"email"`
-	AvatarUrl sql.NullString `json:"avatar_url"`
-}
 
 type AuthResult struct {
 	AccessToken  string
 	RefreshToken string
-	User         AuthUserResponse 
+	User  UserResponse
 }
 
 func NewService(queries *store.Queries, tokens *TokenManager) *Service {
@@ -60,23 +53,23 @@ func NewService(queries *store.Queries, tokens *TokenManager) *Service {
 func (s *Service) Register(ctx context.Context, input RegisterInput) (RegisterResult, error) {
 	email := strings.ToLower(strings.TrimSpace(input.Email))
 	if email == "" {
-		return RegisterResult{}, errors.New("Email is required")
+		return RegisterResult{}, errors.New("email is required")
 	}
 
 	if !emailRegex.MatchString(email) {
-		return RegisterResult{}, errors.New("Invalid email format")
+		return RegisterResult{}, errors.New("invalid email format")
 	}
 
 	if len(input.Password) < 8 {
-		return RegisterResult{}, errors.New("Password must be at least 8 characters")
+		return RegisterResult{}, errors.New("password must be at least 8 characters")
 	}
 
 	if len([]byte(input.Password)) > maxPasswordBytes {
-		return RegisterResult{}, errors.New("Password must not exceed 72 bytes")
+		return RegisterResult{}, errors.New("password must not exceed 72 bytes")
 	}
 
 	if len(input.Name) > 30 {
-		return RegisterResult{}, errors.New("Name must not be greater than 30 characters")
+		return RegisterResult{}, errors.New("name must not be greater than 30 characters")
 	}
 
 	hashPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcryptCost)
@@ -99,7 +92,7 @@ func (s *Service) Register(ctx context.Context, input RegisterInput) (RegisterRe
 		return RegisterResult{}, err
 	}
 
-	return RegisterResult{UserId: created.ID.String()}, nil
+	return RegisterResult{UserID: created.ID.String()}, nil
 
 }
 
@@ -139,11 +132,10 @@ func (s *Service) Login(ctx context.Context, input LoginInput) (AuthResult, erro
 	return AuthResult{
 		RefreshToken: refreshToken,
 		AccessToken:  accessToken,
-		User:         AuthUserResponse{
-			ID: user.ID,
+		User:         UserResponse{
 			Email: user.Email,
 			Name: user.Name,
-			AvatarUrl: user.AvatarUrl,
+			AvatarUrl: user.AvatarUrl.String,
 		},
 	}, nil
 }
@@ -190,11 +182,10 @@ func (s *Service) Refresh (ctx context.Context, refreshToken string) (AuthResult
 	return AuthResult{
 		AccessToken: accessToken,
 		RefreshToken: refreshToken,
-		User: AuthUserResponse {
-			ID: user.ID,
+		User: UserResponse{
 			Name: user.Name,
 			Email: user.Email,
-			AvatarUrl: user.AvatarUrl,
+			AvatarUrl: user.AvatarUrl.String,
 		},
 	}, nil
 }
@@ -206,3 +197,4 @@ func stringToNullString(value string) sql.NullString {
 	}
 	return sql.NullString{String: trimmed, Valid: true}
 }
+
